@@ -1,10 +1,13 @@
 package com.modjam.hytalemoddingjam;
 
 import com.hypixel.hytale.component.*;
+import com.hypixel.hytale.server.core.asset.type.gameplay.GameplayConfig;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Interaction;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.modjam.hytalemoddingjam.gameLogic.GameConfig;
+import com.modjam.hytalemoddingjam.gameLogic.GameInstances;
 import com.modjam.hytalemoddingjam.weakpoints.SpawnEntityWithWeakPointCommand;
 import com.modjam.hytalemoddingjam.weakpoints.WeakPointComponent;
 import com.modjam.hytalemoddingjam.weakpoints.WeakProjectileInteraction;
@@ -27,5 +30,10 @@ public class MainPlugin extends JavaPlugin {
         getCommandRegistry().registerCommand(new SpawnEntityWithWeakPointCommand("WeakPointTest", "Test for spawning an enemy that has a weak point on it"));
 
         getCodecRegistry(Interaction.CODEC).register("WeakProjectileCondition", WeakProjectileInteraction.class, WeakProjectileInteraction.CODEC);
+
+
+		GameInstances.init(this.getEventRegistry());
+
+		this.getCodecRegistry(GameplayConfig.PLUGIN_CODEC).register(GameConfig.class, "MannCo", GameConfig.CODEC);
     }
 }
