@@ -7,13 +7,13 @@ import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.protocol.Vector3f;
 import com.hypixel.hytale.server.core.codec.ProtocolCodecs;
 
-public class EnnemySpawnPoint {
-	public static final BuilderCodec<EnnemySpawnPoint> CODEC = BuilderCodec.builder(EnnemySpawnPoint.class, EnnemySpawnPoint::new)
+public class EnemySpawnPoint {
+	public static final BuilderCodec<EnemySpawnPoint> CODEC = BuilderCodec.builder(EnemySpawnPoint.class, EnemySpawnPoint::new)
 			.append(new KeyedCodec<>("Coordinates", ProtocolCodecs.VECTOR3F), (config, o) -> config.pos = new Vector3d(o.x, o.y, o.z), config -> new Vector3f((float) config.pos.x, (float) config.pos.y, (float) config.pos.z))
 			.documentation("The required amount of scrap to respawn").add()
 
 			.build();
-	public static ArrayCodec<EnnemySpawnPoint> ARRAY_CODEC = new ArrayCodec<>(CODEC, EnnemySpawnPoint[]::new);
+	public static ArrayCodec<EnemySpawnPoint> ARRAY_CODEC = new ArrayCodec<>(CODEC, EnemySpawnPoint[]::new);
 
 	private Vector3d pos = Vector3d.ZERO.clone();
 
