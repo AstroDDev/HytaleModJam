@@ -27,12 +27,11 @@ public class EnemyAdditions {
 	}
 
 	/**
-	 * Methods get called for target npc just after he is spawned
+	 * Methods get called for targeted npc just after he is spawned
 	 */
 	static {
 		add("ArmorBot", (ref, npc) -> {
 			//TODO I let you handle the specifics of WeakPoint definitions. Diams.
-			System.out.println("hey there");
 			ref.getStore().addComponent(ref, WeakPointComponent.getComponentType(), new WeakPointComponent());
 		});
 	}

@@ -1,5 +1,6 @@
 package com.modjam.hytalemoddingjam.gameLogic.spawing;
 
+import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.RemoveReason;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.math.util.MathUtil;
@@ -7,10 +8,14 @@ import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.math.vector.Vector3f;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.world.World;
+import com.hypixel.hytale.server.core.universe.world.npc.INonPlayerCharacter;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.npc.NPCPlugin;
 import com.modjam.hytalemoddingjam.gameLogic.GameConfig;
+import it.unimi.dsi.fastutil.Pair;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Date;
 
 public class WaveSpawner {
@@ -69,9 +74,7 @@ public class WaveSpawner {
 
 			world.execute(() -> {
 				for(int i = 0; i < spawnCount; i++) {
-					var pair = NPCPlugin.get().spawnNPC(store, config.getWeakEnemies()[randomNPC], "Robot", config.getPoints()[spawnPoint].getPos().add(new Vector3d(Math.random() * 2 - 1, 0, Math.random() * 2 - 1)), new Vector3f(0, 0, 0));
-					if(pair != null)
-						EnemyAdditions.onNPCSpawned(pair);
+					this.spawnEnnemy(store, config.getWeakEnemies()[randomNPC], "Robot", config.getPoints()[spawnPoint].getPos().add(new Vector3d(Math.random() * 2 - 1, 0, Math.random() * 2 - 1)), new Vector3f(0, 0, 0));
 				}
 			});
 
@@ -84,11 +87,18 @@ public class WaveSpawner {
 			int spawnPoint = (int) Math.floor(Math.random() * config.getPoints().length);
 
 			world.execute(() -> {
-				NPCPlugin.get().spawnNPC(store, config.getStrongEnemies()[randomNPC], "Robot", config.getPoints()[spawnPoint].getPos().add(new Vector3d(Math.random() * 2 - 1, 0, Math.random() * 2 - 1)), new Vector3f(0, 0, 0));
+				this.spawnEnnemy(store, config.getStrongEnemies()[randomNPC], "Robot", config.getPoints()[spawnPoint].getPos().add(new Vector3d(Math.random() * 2 - 1, 0, Math.random() * 2 - 1)), new Vector3f(0, 0, 0));
+
 			});
 
 			lastStrongSpawn = currentTime;
 		}
+	}
+	private void spawnEnnemy(@Nonnull Store<EntityStore> store, @Nonnull String npcType, @Nullable String groupType, @Nonnull Vector3d position, @Nonnull Vector3f rotation)
+	{
+		Pair<Ref<EntityStore>, INonPlayerCharacter> pair=NPCPlugin.get().spawnNPC(store, npcType, "Robot", position, rotation);
+		if(pair != null)
+			EnemyAdditions.onNPCSpawned(pair);
 	}
 
 	public void Despawn(Store<EntityStore> store) {

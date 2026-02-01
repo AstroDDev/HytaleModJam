@@ -57,7 +57,6 @@ public class GameCommand extends AbstractCommandCollection {
 			if(inst != null) {
 				InstancesPlugin.teleportPlayerToInstance(ref, ref.getStore(), inst.world, null);
 			} else {
-				//TODO need to settle on gamemodeId or settings
 				GameInstances.createInstance(ref, world);
 				context.sendMessage(Message.raw("Creating instance..."));
 			}
