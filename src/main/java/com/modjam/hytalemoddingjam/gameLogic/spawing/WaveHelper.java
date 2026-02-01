@@ -93,11 +93,7 @@ public class WaveHelper {
 			store.getExternalData().getWorld().sendMessage(Message.raw("Wave " + waveIndex + " has ended"));
 		}
 	}
-	public void scrapCollected(int collected,World world){
-		scrapCollectedWave+=collected;
-		scrapCollectedTotal+=collected;
-		world.sendMessage(Message.raw("Scrap collected: "+scrapCollectedWave+"/"+quota));
-	}
+
     public long getWaveStartTime() {
         return waveStartTime;
     }
@@ -109,4 +105,28 @@ public class WaveHelper {
     public boolean isIntermission() {
         return intermission;
     }
+
+	public int getScrapCollectedWave() {
+		return scrapCollectedWave;
+	}
+
+	public void addScrap(int addOrRemove) {
+		this.scrapCollectedWave +=addOrRemove;
+		this.scrapCollectedTotal +=addOrRemove;
+	}
+
+	public int getScrapCollectedTotal() {
+		return scrapCollectedTotal;
+	}
+
+
+	public int getQuota() {
+		return quota;
+	}
+
+	public void scrapCollected(int collected, World world){
+		scrapCollectedWave+=collected;
+		scrapCollectedTotal+=collected;
+		world.sendMessage(Message.raw("Scrap collected: "+scrapCollectedWave+"/"+quota));
+	}
 }

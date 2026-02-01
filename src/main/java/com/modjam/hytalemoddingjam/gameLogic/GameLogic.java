@@ -12,6 +12,7 @@ import com.hypixel.hytale.server.npc.NPCPlugin;
 import com.hypixel.hytale.server.npc.corecomponents.world.ActionStorePosition;
 import com.modjam.hytalemoddingjam.gameLogic.spawing.WaveHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -22,7 +23,6 @@ public class GameLogic {
 	public final Store<EntityStore> store;
 	private ScheduledFuture<?> executor;
 	private boolean started = false;
-
 	private WaveHelper waveHelper;
 
 	public GameLogic(World world, GameConfig config) {
@@ -73,6 +73,18 @@ public class GameLogic {
 
 	}
 
+	public boolean revivePlayer(String username)
+	{
+		if(waveHelper.getScrapCollectedWave()>=config.getRespawnScrap())
+		{
+			waveHelper.addScrap(-config.getRespawnScrap());
+			world.sendMessage(Message.raw("Reviving "+username+": "+config.getRespawnScrap()+" Scraps lost."));
+			return true;
+		}
+		world.sendMessage(Message.raw(username+" is out of the game!"));
+		return false;
+
+	}
 	public void cleanup() {
 		executor.cancel(true);
 	}
