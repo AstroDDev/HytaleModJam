@@ -72,4 +72,8 @@ public class GameLogic {
 	public void cleanup() {
 		executor.cancel(true);
 	}
+
+	public void stop() {
+
+	}
 }

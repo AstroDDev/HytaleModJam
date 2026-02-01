@@ -28,7 +28,10 @@ public class GameInstances {
 
 		});
 	}
-
+	public static GameLogic getAny() {
+		var k=logics.keySet().stream().findFirst();
+		return k.map(world -> logics.get(world)).orElse(null);
+	}
 	public static GameLogic get(World world) {
 		return logics.get(world);
 	}

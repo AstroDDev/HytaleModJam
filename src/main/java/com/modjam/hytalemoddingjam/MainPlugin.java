@@ -9,6 +9,7 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.modjam.hytalemoddingjam.Matchmaking.Commands.MatchmakingCommands;
 import com.modjam.hytalemoddingjam.Matchmaking.Commands.lobby.LobbyCommands;
 import com.modjam.hytalemoddingjam.Matchmaking.MatchmakingSystem;
+import com.modjam.hytalemoddingjam.commands.GameCommand;
 import com.modjam.hytalemoddingjam.gameLogic.GameConfig;
 import com.modjam.hytalemoddingjam.gameLogic.GameInstances;
 import com.modjam.hytalemoddingjam.weakpoints.SpawnEntityWithWeakPointCommand;
@@ -42,5 +43,6 @@ public class MainPlugin extends JavaPlugin {
 
 
         GameInstances.init(this.getEventRegistry());
+		this.getCommandRegistry().registerCommand(new GameCommand());
     }
 }
