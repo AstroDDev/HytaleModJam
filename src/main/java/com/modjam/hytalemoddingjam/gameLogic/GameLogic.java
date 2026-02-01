@@ -3,7 +3,9 @@ package com.modjam.hytalemoddingjam.gameLogic;
 import com.hypixel.hytale.builtin.npceditor.NPCRoleAssetTypeHandler;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.server.core.HytaleServer;
+import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.npc.NPCPlugin;
@@ -20,8 +22,6 @@ public class GameLogic {
 	public final Store<EntityStore> store;
 	private ScheduledFuture<?> executor;
 	private boolean started = false;
-	private int units = 50;
-	private int collectedgears = 0;
 
 	private WaveHelper waveHelper;
 
@@ -32,8 +32,6 @@ public class GameLogic {
 	}
 
 	public void start() {
-		this.units = 50;
-		this.collectedgears = 0;
 
 		this.executor = HytaleServer.SCHEDULED_EXECUTOR.scheduleAtFixedRate(() -> world.execute(this::tick), 500, 500, TimeUnit.MILLISECONDS);
 		this.started = true;
@@ -42,40 +40,32 @@ public class GameLogic {
 		waveHelper.start(store);
 	}
 
-	public void tick() {
-        if (!started) {
-            return;
-        }
-
-		waveHelper.update(store);
-
-			/*if(units > 0) {
-				for(EnemySpawnPoint point : this.config.getPoints()) {
-					NPCPlugin.get().spawnNPC(world.getEntityStore().getStore(), "Skeleton", null, point.getPos(), Vector3f.ZERO.clone());
-					units--;
-				}
-			}
-			if(config.getPortalScrap() - collectedgears > 0) {
+	/**
+	 * Temporary method, allow for easy collect scrap from inventory for now
+	 */
+	private void autoScoreScraps()
+	{
 				getPlayers().forEach(pl -> {
-					var required = config.getPortalScrap() - collectedgears;
-					var trans = pl.getInventory().getCombinedEverything().removeItemStack(new ItemStack("RustyGear", required), false, true);
 
-					var eaten = required;
+					var trans = pl.getInventory().getCombinedEverything().removeItemStack(new ItemStack("RustyGear", 10), false, true);
+					var eaten = 10;
 					if(trans.getRemainder() != null)
 						eaten -= trans.getRemainder().getQuantity();
-
 					if(eaten > 0) {
-						collectedgears += eaten;
-						world.sendMessage(Message.raw(collectedgears + "/" + config.getPortalScrap() + " gears collected!"));
+						waveHelper.scrapCollected(eaten,world);
 					}
 
 
 				});
-			} else {
-				started = false;
-				//collectedgears = 0;
-				world.sendMessage(Message.raw("WINNED!"));
-			}*/
+	}
+	public void tick() {
+        if (!started) {
+            return;
+        }
+		autoScoreScraps();
+		waveHelper.update(store);
+
+
     }
 
 	public List<Player> getPlayers() {
