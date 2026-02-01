@@ -1,10 +1,13 @@
 package com.modjam.hytalemoddingjam;
 
 import com.hypixel.hytale.component.*;
+import com.hypixel.hytale.event.EventRegistry;
 import com.hypixel.hytale.server.core.asset.type.gameplay.GameplayConfig;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Interaction;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
+import com.hypixel.hytale.server.core.universe.world.events.RemoveWorldEvent;
+import com.hypixel.hytale.server.core.universe.world.events.StartWorldEvent;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.modjam.hytalemoddingjam.Matchmaking.Commands.MatchmakingCommands;
 import com.modjam.hytalemoddingjam.Matchmaking.Commands.lobby.LobbyCommands;
@@ -39,10 +42,12 @@ public class MainPlugin extends JavaPlugin {
         getCommandRegistry().registerCommand(new LobbyCommands());
         getEntityStoreRegistry().registerSystem(new MatchmakingSystem());
 
+        // game and game config
         getCodecRegistry(GameplayConfig.PLUGIN_CODEC).register(GameConfig.class, "MannCo", GameConfig.CODEC);
 
-
-        GameInstances.init(this.getEventRegistry());
-		this.getCommandRegistry().registerCommand(new GameCommand());
+        EventRegistry registry = this.getEventRegistry();
+        registry.registerGlobal(StartWorldEvent.class, GameInstances::onStartWorldEvent);
+        registry.registerGlobal(RemoveWorldEvent.class, GameInstances::onRemoveWorldEvent);
+        this.getCommandRegistry().registerCommand(new GameCommand());
     }
 }
