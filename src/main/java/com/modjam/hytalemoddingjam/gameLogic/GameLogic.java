@@ -82,15 +82,17 @@ public class GameLogic {
         if (!started) {
             return;
         }
-		autoScoreScraps();
+
 		waveHelper.update(store);
-
-
     }
 
 	public List<Player> getPlayers() {
 		return world.getPlayerRefs().stream().map((ref) -> ref.getReference().getStore().getComponent(ref.getReference(), Player.getComponentType())).toList();
 
+	}
+
+	public void collectGear(){
+		waveHelper.addScrap(1);
 	}
 
 	public boolean revivePlayer(String username)

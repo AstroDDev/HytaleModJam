@@ -68,4 +68,6 @@ public class GameInstances {
 	public static GameLogic get(World world) {
 		return logics.get(world.getName());
 	}
+
+	public static boolean has(World world) { return logics.containsKey(world.getName()); }
 }

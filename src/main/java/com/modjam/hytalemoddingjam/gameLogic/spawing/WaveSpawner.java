@@ -12,6 +12,7 @@ import com.hypixel.hytale.server.core.universe.world.npc.INonPlayerCharacter;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.npc.NPCPlugin;
 import com.modjam.hytalemoddingjam.gameLogic.GameConfig;
+import com.modjam.hytalemoddingjam.gameLogic.entities.EnemyAdditions;
 import it.unimi.dsi.fastutil.Pair;
 
 import javax.annotation.Nonnull;
@@ -73,7 +74,7 @@ public class WaveSpawner {
 
 			world.execute(() -> {
 				for(int i = 0; i < spawnCount; i++) {
-					this.spawnEnnemy(store, config.getWeakEnemies()[randomNPC], "Robot", config.getPoints()[spawnPoint].getPos().add(new Vector3d(Math.random() * 2 - 1, 0, Math.random() * 2 - 1)), new Vector3f(0, 0, 0));
+					this.spawnEnemy(store, config.getWeakEnemies()[randomNPC], "Robot", config.getPoints()[spawnPoint].getPos().add(new Vector3d(Math.random() * 2 - 1, 0, Math.random() * 2 - 1)), new Vector3f(0, 0, 0));
 				}
 			});
 
@@ -86,14 +87,14 @@ public class WaveSpawner {
 			int spawnPoint = (int) Math.floor(Math.random() * config.getPoints().length);
 
 			world.execute(() -> {
-				this.spawnEnnemy(store, config.getStrongEnemies()[randomNPC], "Robot", config.getPoints()[spawnPoint].getPos().add(new Vector3d(Math.random() * 2 - 1, 0, Math.random() * 2 - 1)), new Vector3f(0, 0, 0));
-
+				this.spawnEnemy(store, config.getStrongEnemies()[randomNPC], "Robot", config.getPoints()[spawnPoint].getPos().add(new Vector3d(Math.random() * 2 - 1, 0, Math.random() * 2 - 1)), new Vector3f(0, 0, 0));
 			});
 
 			lastStrongSpawn = currentTime;
 		}
 	}
-	private void spawnEnnemy(@Nonnull Store<EntityStore> store, @Nonnull String npcType, @Nullable String groupType, @Nonnull Vector3d position, @Nonnull Vector3f rotation)
+
+	private void spawnEnemy(@Nonnull Store<EntityStore> store, @Nonnull String npcType, @Nullable String groupType, @Nonnull Vector3d position, @Nonnull Vector3f rotation)
 	{
 		Pair<Ref<EntityStore>, INonPlayerCharacter> pair=NPCPlugin.get().spawnNPC(store, npcType, "Robot", position, rotation);
 		if(pair != null)
@@ -108,4 +109,6 @@ public class WaveSpawner {
 			commandBuffer.removeEntity(archetypeChunk.getReferenceTo(index), RemoveReason.REMOVE);
 		});
 	}
+
+	public double getDifficulty() { return difficulty; }
 }

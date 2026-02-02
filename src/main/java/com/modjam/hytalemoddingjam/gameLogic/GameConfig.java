@@ -36,17 +36,14 @@ public class GameConfig {
 			.documentation("The amount of strong enemies to spawn at difficulty 1.0").add()
 			.append(new KeyedCodec<>("WaveDifficultyIncrease", Codec.DOUBLE), (config, o) -> config.waveDifficultyIncrease = o, config -> config.waveDifficultyIncrease)
 			.documentation("The slight gain in difficulty each new wave").add()
-
 			.append(new KeyedCodec<>("WaveCount", Codec.INTEGER), (config, o) -> config.waveCount = o, config -> config.waveCount)
 			.documentation("The number of waves to clear").add()
 			.append(new KeyedCodec<>("WaveLength", Codec.INTEGER), (config, o) -> config.waveLength = o, config -> config.waveLength)
 			.documentation("The length of the wave in milliseconds").add()
 			.append(new KeyedCodec<>("WaveIntermissionLength", Codec.INTEGER), (config, o) -> config.waveIntermissionLength = o, config -> config.waveIntermissionLength)
 			.documentation("The length of rest in between waves").add()
-			.append(new KeyedCodec<>("BaseScrapThreshold", Codec.INTEGER), (config, o) -> config.baseScrapThreshold = o, config -> config.baseScrapThreshold)
-			.documentation("A base number of scrap required to win the wave").add()
-			.append(new KeyedCodec<>("ScrapThresholdMultiplier", Codec.DOUBLE), (config, o) -> config.baseScrapMultiplier = o, config -> config.baseScrapMultiplier)
-			.documentation("Base scrap number is multiplied by this number each wave").add()
+			.append(new KeyedCodec<>("ScrapQuotaRate", Codec.DOUBLE), (config, o) -> config.scrapQuotaRate = o, config -> config.scrapQuotaRate)
+			.documentation("The target scrap quota at 1.0 difficulty").add()
 			.build();
 
 	private int portalScrap = 100;
@@ -64,29 +61,16 @@ public class GameConfig {
 	private double strongSpawnAmount = 2;
 	private double waveDifficultyIncrease = 0.025;
 
-
-	private int baseScrapThreshold =3;
-	private double baseScrapMultiplier =1.5;
 	private int waveCount = 3;
 	private int waveLength = 60000; //In Milliseconds
 	private int waveIntermissionLength = 10000;
 
+	private double scrapQuotaRate = 3;
+
 
 	public GameConfig() {
 	}
-	public int getBaseScrapQuota()
-	{
-		return this.baseScrapThreshold;
-	}
-	public double getScrapQuotaMultiplier()
-	{
-		return this.baseScrapMultiplier;
-	}
-	public int getScrapQuotaForWave(int waveNumber)
-	{
-		return (int)(baseScrapThreshold * Math.pow(baseScrapMultiplier, waveNumber - 1));
 
-	}
 	public int getPortalScrap() {
 		return portalScrap;
 	}
@@ -138,4 +122,6 @@ public class GameConfig {
 	public int getWaveLength() { return waveLength; }
 
 	public int getWaveIntermissionLength() { return waveIntermissionLength; }
+
+	public double getScrapQuotaRate() { return scrapQuotaRate; }
 }

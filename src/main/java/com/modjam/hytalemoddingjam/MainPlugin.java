@@ -17,6 +17,7 @@ import com.modjam.hytalemoddingjam.Matchmaking.Commands.lobby.LobbyCommands;
 import com.modjam.hytalemoddingjam.Matchmaking.MatchmakingSystem;
 import com.modjam.hytalemoddingjam.commands.GameCommand;
 import com.modjam.hytalemoddingjam.gameLogic.DifficultyResource;
+import com.modjam.hytalemoddingjam.gameLogic.DepositScrapInteraction;
 import com.modjam.hytalemoddingjam.gameLogic.GameConfig;
 import com.modjam.hytalemoddingjam.gameLogic.GameInstances;
 import com.modjam.hytalemoddingjam.gameLogic.GameRespawnController;
@@ -53,6 +54,7 @@ public class MainPlugin extends JavaPlugin {
         // game and game config
         getCodecRegistry(GameplayConfig.PLUGIN_CODEC).register(GameConfig.class, "MannCo", GameConfig.CODEC);
 		difficultyRessource = this.getEntityStoreRegistry().registerResource(DifficultyResource.class, "MannCoDifficulty", DifficultyResource.CODEC);
+        getCodecRegistry(Interaction.CODEC).register("DepositScrap", DepositScrapInteraction.class, DepositScrapInteraction.CODEC);
 
 		RespawnController.CODEC.register("MannCoGameRespawn", GameRespawnController.class, GameRespawnController.CODEC);
         EventRegistry registry = this.getEventRegistry();

@@ -1,4 +1,4 @@
-package com.modjam.hytalemoddingjam.gameLogic.spawing;
+package com.modjam.hytalemoddingjam.gameLogic.entities;
 
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.server.core.universe.world.npc.INonPlayerCharacter;
@@ -8,7 +8,6 @@ import it.unimi.dsi.fastutil.Pair;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public class EnemyAdditions {
 	private static ConcurrentHashMap<String, BiConsumer<Ref<EntityStore>, INonPlayerCharacter>> additions = new ConcurrentHashMap<>();
