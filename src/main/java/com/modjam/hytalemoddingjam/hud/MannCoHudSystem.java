@@ -46,10 +46,18 @@ public class MannCoHudSystem extends EntityTickingSystem<EntityStore> {
 
         UICommandBuilder builder = new UICommandBuilder();
         builder.append("Hud.ui");
+		if(gameLogic.getWaveHelper().isIntermission())
+			builder.set("#GearLabel.Text", "0/0");
+		else {
+			builder.set("#GearLabel.Text", gameLogic.getWaveHelper().getScrapCollectedWave()+"/"+gameLogic.getWaveHelper().getQuota());
+		}
         if (System.currentTimeMillis() - gameLogic.getWaveHelper().getWaveStartTime() < ANNOUNCEMENT_LENGTH_MILLIS) {
             if (gameLogic.getWaveHelper().isIntermission()) {
                 // NOTE: this is + 1 for 0-indexed then - 1 because wave over happens after index increment
-                builder.set("#BannerTitle.Text", "Wave " + (gameLogic.getWaveHelper().getWaveIndex()) + " Over!");
+				if(gameLogic.getWaveHelper().getWaveIndex()>0)
+                	builder.set("#BannerTitle.Text", "Wave " + (gameLogic.getWaveHelper().getWaveIndex()) + " Over!");
+				else
+					builder.set("#BannerTitle.Text", "");
             } else {
                 builder.set("#BannerTitle.Text", "Wave " + (gameLogic.getWaveHelper().getWaveIndex() + 1) + " Incoming!");
             }

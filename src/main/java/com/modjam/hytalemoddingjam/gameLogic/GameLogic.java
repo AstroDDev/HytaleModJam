@@ -92,7 +92,7 @@ public class GameLogic {
 				EffectControllerComponent effectControllerComponent = player.getStore().getComponent(player, EffectControllerComponent.getComponentType());
 				if(effectControllerComponent != null && effectControllerComponent.getActiveEffects().get(EntityEffect.getAssetMap().getIndex(effectId))==null)
 					effectControllerComponent.addEffect(player, entityEffect,player.getStore());
-				
+
 			}
 		}
 	}
@@ -111,7 +111,7 @@ public class GameLogic {
 			}
 		}
 		if(!atLeast1PlayerAlive)
-		waveHelper.forceEnd();
+			waveHelper.forceEnd();
     }
 
 	public List<Player> getPlayers() {
