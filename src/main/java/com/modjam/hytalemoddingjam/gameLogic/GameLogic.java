@@ -70,7 +70,10 @@ public class GameLogic {
 		world.sendMessage(Message.raw("You survived "+data.getLastWave()+" waves.\nYou collected "+data.getTotalScrap()+" scraps."));
 		world.sendMessage(Message.raw("Instance will close in 10 secondes"));
 		HytaleServer.SCHEDULED_EXECUTOR.schedule(()->{
-			world.stopIndividualWorld();
+			world.execute(()->{
+				world.drainPlayersTo(Universe.get().getDefaultWorld());
+			});
+
 
 		},10,TimeUnit.SECONDS);
 	}
