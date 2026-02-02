@@ -47,10 +47,11 @@ public class GameLogic {
 
 		this.executor = HytaleServer.SCHEDULED_EXECUTOR.scheduleAtFixedRate(() -> world.execute(this::tick), 500, 500, TimeUnit.MILLISECONDS);
 		this.started = true;
-		var savedDifficluty= Universe.get().getDefaultWorld().getEntityStore().getStore().getResource(MainPlugin.getDifficultyResourceType()).getLocalDifficulty();
+		var savedDifficluty = Universe.get().getDefaultWorld().getEntityStore().getStore().getResource(MainPlugin.getDifficultyResourceType()).getLocalDifficulty();
 		this.waveHelper = new WaveHelper(config, savedDifficluty);
 		waveHelper.start(store);
 		waveHelper.setGameOverFunction(this::onGameEnd);
+		this.world.sendMessage(Message.raw("Hazard Level is " + Math.floor(savedDifficluty * 100)));
 	}
 	public void onGameEnd(EndedGameData data)
 	{
@@ -111,7 +112,7 @@ public class GameLogic {
 			}
 		}
 		if(!atLeast1PlayerAlive)
-		waveHelper.forceEnd();
+			waveHelper.forceEnd();
     }
 
 	public List<Player> getPlayers() {

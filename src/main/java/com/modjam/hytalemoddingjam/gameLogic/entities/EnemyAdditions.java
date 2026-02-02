@@ -30,8 +30,11 @@ public class EnemyAdditions {
 	 */
 	static {
 		add("ArmorBot", (ref, npc) -> {
-			//TODO I let you handle the specifics of WeakPoint definitions. Diams.
-			ref.getStore().addComponent(ref, WeakPointComponent.getComponentType(), new WeakPointComponent());
+			ref.getStore().addComponent(ref, WeakPointComponent.getComponentType(), new WeakPointComponent(
+					0.25f, 0.5f, 0.5f,
+					0.75f, 1f, 1f,
+					true
+			));
 		});
 	}
 }

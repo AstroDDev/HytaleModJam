@@ -26,17 +26,17 @@ public class SpawnEntityWithWeakPointCommand extends AbstractPlayerCommand {
         TransformComponent transform = store.getComponent(ref, TransformComponent.getComponentType());
 
         world.execute(() -> {
-            Pair<Ref<EntityStore>, INonPlayerCharacter> result = NPCPlugin.get().spawnNPC(store, "Armadillo", "None", transform.getPosition(), transform.getRotation());
+            Pair<Ref<EntityStore>, INonPlayerCharacter> result = NPCPlugin.get().spawnNPC(store, "ArmorBot", "None", transform.getPosition(), transform.getRotation());
 
             WeakPointComponent weakPoint = store.ensureAndGetComponent(result.first(), WeakPointComponent.getComponentType());
 
             weakPoint.weak = true;
-            weakPoint.minX = -5;
-            weakPoint.minY = 0;
+            weakPoint.minX = -0.65f;
+            weakPoint.minY = 0.85f;
             weakPoint.minZ = 0;
-            weakPoint.maxX = 10;
-            weakPoint.maxY = 10;
-            weakPoint.maxZ = 10;
+            weakPoint.maxX = 0.65f;
+            weakPoint.maxY = 1.65f;
+            weakPoint.maxZ = 1;
         });
     }
 }
