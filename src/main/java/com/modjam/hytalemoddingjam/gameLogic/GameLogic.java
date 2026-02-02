@@ -54,7 +54,7 @@ public class GameLogic {
 	}
 
 	public void collectGear(){
-		collectedgears++;
+		waveHelper.addScrap(1);
 	}
 
 	public boolean revivePlayer(String username)

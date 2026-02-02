@@ -20,6 +20,7 @@ public class WaveHelper {
 	private int quota=0;
 	private int scrapCollectedWave=0;
 	private int scrapCollectedTotal=0;
+
     public WaveHelper(GameConfig config){
         this.config = config;
         this.spawner = new WaveSpawner(1, config);
@@ -29,7 +30,7 @@ public class WaveHelper {
     public void start(Store<EntityStore> store){
         waveStartTime = System.currentTimeMillis() + config.getWaveIntermissionLength();
         waveIndex = 0;
-		quota=config.getScrapQuotaForWave(waveIndex);
+		quota = (int) Math.floor(config.getScrapQuotaRate() * spawner.getDifficulty());
         intermission = true;
     }
 
@@ -48,14 +49,13 @@ public class WaveHelper {
             if (currentTime > (waveStartTime + config.getWaveLength())){
 
 				//Quota checking
-				if(this.scrapCollectedWave>=quota)
+				if(this.scrapCollectedWave >= quota)
 				{
 					//proceed to next wave
 					nextWave(store,currentTime);
 				}
 				else
 				{
-
 					spawner.Disable();
 					//TODO not enough scraps, game over.
 				}
@@ -70,13 +70,13 @@ public class WaveHelper {
 	private void nextWave(Store<EntityStore> store, long currentTime)
 	{
 		waveIndex++;
-		quota=config.getScrapQuotaForWave(waveIndex);
+		quota = (int) Math.floor(config.getScrapQuotaRate() * spawner.getDifficulty());
 		//Is all bonus scrap loss at the end of a wave? If so we should reset this to 0 instead.
-		scrapCollectedWave-=quota;
+		scrapCollectedWave = 0;
 
 		spawner.Disable();
 		spawner.Despawn(store);
-		spawner.setWave(waveIndex + 1);
+		spawner.setWave(waveIndex);
 
 		intermission = true;
 		waveStartTime = currentTime + config.getWaveIntermissionLength();
@@ -110,9 +110,11 @@ public class WaveHelper {
 		return scrapCollectedWave;
 	}
 
-	public void addScrap(int addOrRemove) {
-		this.scrapCollectedWave +=addOrRemove;
-		this.scrapCollectedTotal +=addOrRemove;
+	public void addScrap(int amount) {
+		this.scrapCollectedWave += amount;
+		this.scrapCollectedTotal += amount;
+
+		//To Do, update UI for all players
 	}
 
 	public int getScrapCollectedTotal() {
