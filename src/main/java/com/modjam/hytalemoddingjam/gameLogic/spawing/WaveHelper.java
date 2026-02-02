@@ -84,7 +84,6 @@ public class WaveHelper {
 
 	private void endWaveAndGoToIntermission(Store<EntityStore> store, long currentTime)
 	{
-
 		waveIndex++;
 		spawner.Disable();
 		spawner.Despawn(store);
@@ -95,14 +94,17 @@ public class WaveHelper {
 		waveStartTime = currentTime + config.getWaveIntermissionLength();
 
 		if (waveIndex >= config.getWaveCount()){
-			if(triggerGameOver !=null)
-				triggerGameOver.accept(new EndedGameData().setLastWave(waveIndex).setTotalScrap(scrapCollectedTotal).setWon(true));
-
+			triggerGameOver.accept(new EndedGameData().setLastWave(waveIndex).setTotalScrap(scrapCollectedTotal).setWon(true));
 		}
 		else{
-			store.getExternalData().getWorld().sendMessage(Message.raw("Wave " + waveIndex + " has ended"));
-			if(triggerNextWave!=null)
-				triggerNextWave.accept(waveIndex);
+			Message waveOverMessage = Message.raw("Wave " + waveIndex + " over!");
+			store.getExternalData().getWorld().sendMessage(waveOverMessage);
+			for (PlayerRef playerRef : gameLogic.getPlayerRefs()) {
+				EventTitleUtil.showEventTitleToPlayer(playerRef, waveOverMessage, Message.raw("Intermission: " + ((config.getWaveIntermissionLength() / 1000)) + " seconds"), false, null, 2.0F, 0.5F, 0.5F);
+			}
+			if(triggerNextWave != null) {
+                triggerNextWave.accept(waveIndex);
+            }
 		}
 
 	}
