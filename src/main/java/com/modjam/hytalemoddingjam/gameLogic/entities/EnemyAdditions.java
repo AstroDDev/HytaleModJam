@@ -31,8 +31,8 @@ public class EnemyAdditions {
 	static {
 		add("ArmorBot", (ref, npc) -> {
 			ref.getStore().addComponent(ref, WeakPointComponent.getComponentType(), new WeakPointComponent(
-					0.25f, 0.5f, 0.5f,
-					0.75f, 1f, 1f,
+					-0.65f, 0.85f, 0f,
+					0.65f, 1.65f, 1f,
 					true
 			));
 		});
