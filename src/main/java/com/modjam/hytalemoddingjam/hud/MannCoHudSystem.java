@@ -68,6 +68,13 @@ public class MannCoHudSystem extends EntityTickingSystem<EntityStore> {
 			time= (int) ((gameLogic.getWaveHelper().getWaveStartTime()+ gameLogic.config.getWaveLength())-System.currentTimeMillis());
 		time=time/1000;
 		builder.set("#TimerLabel.Text",""+time);
+
+//        showWaveText(gameLogic, builder);
+
+        customHud.update(true, builder);
+    }
+
+    private static void showWaveText(GameLogic gameLogic, UICommandBuilder builder) {
         if (System.currentTimeMillis() - gameLogic.getWaveHelper().getWaveStartTime() < ANNOUNCEMENT_LENGTH_MILLIS) {
             if (gameLogic.getWaveHelper().isIntermission()) {
                 // NOTE: this is + 1 for 0-indexed then - 1 because wave over happens after index increment
@@ -81,7 +88,5 @@ public class MannCoHudSystem extends EntityTickingSystem<EntityStore> {
         } else {
             builder.set("#BannerTitle.Text", "");
         }
-
-        customHud.update(true, builder);
     }
 }

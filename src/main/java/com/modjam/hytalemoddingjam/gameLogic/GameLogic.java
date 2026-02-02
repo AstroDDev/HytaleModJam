@@ -36,7 +36,7 @@ public class GameLogic {
 	private ScheduledFuture<?> executor;
 	private boolean started = false;
 	private WaveHelper waveHelper;
-	private List<Ref<EntityStore>> deadPlayers=new ArrayList<>();
+	private List<Ref<EntityStore>> deadPlayers = new ArrayList<>();
 
 	public GameLogic(World world, GameConfig config) {
 		this.config = config;
@@ -45,26 +45,24 @@ public class GameLogic {
 	}
 
 	public void start() {
-
 		this.executor = HytaleServer.SCHEDULED_EXECUTOR.scheduleAtFixedRate(() -> world.execute(this::tick), 500, 500, TimeUnit.MILLISECONDS);
 		this.started = true;
 		var savedDifficluty = Universe.get().getDefaultWorld().getEntityStore().getStore().getResource(MainPlugin.getDifficultyResourceType()).getLocalDifficulty();
-		this.waveHelper = new WaveHelper(config, savedDifficluty);
+		this.waveHelper = new WaveHelper(this, config, savedDifficluty, this::onGameEnd);
 		waveHelper.start(store);
-		waveHelper.setGameOverFunction(this::onGameEnd);
 		waveHelper.setNextWaveFunction((i)->respawnAllPlayers());
 		this.world.sendMessage(Message.raw("Hazard Level is " + (int)Math.floor(savedDifficluty * 100)));
 	}
-	public void respawnAllPlayers()
-	{
+
+	public void respawnAllPlayers() {
 		deadPlayers.forEach((p)->{
 			var tp=Teleport.createForPlayer(world.getWorldConfig().getSpawnProvider().getSpawnPoint(p,p.getStore()));
 			p.getStore().addComponent(p,Teleport.getComponentType(),tp);
 		});
 		deadPlayers.clear();
 	}
-	public void onGameEnd(EndedGameData data)
-	{
+
+	public void onGameEnd(EndedGameData data) {
 
 		this.stop();
 		Universe.get().getDefaultWorld().getEntityStore().getStore().getResource(MainPlugin.getDifficultyResourceType()).addDifficulty(data.isWon()?0.25:-0.25);
@@ -75,7 +73,6 @@ public class GameLogic {
 			world.stopIndividualWorld();
 
 		},10,TimeUnit.SECONDS);
-
 	}
 	public void applyEffect(String effectId,Ref<EntityStore> player)
 	{
@@ -106,6 +103,10 @@ public class GameLogic {
 		if(!atLeast1PlayerAlive)
 			waveHelper.forceEnd();
     }
+
+	public Collection<PlayerRef> getPlayerRefs() {
+		return world.getPlayerRefs();
+	}
 
 	public List<Player> getPlayers() {
 		return world.getPlayerRefs().stream().map((ref) -> ref.getReference().getStore().getComponent(ref.getReference(), Player.getComponentType())).toList();

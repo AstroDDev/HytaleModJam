@@ -1,18 +1,19 @@
 package com.modjam.hytalemoddingjam.gameLogic.spawing;
 
-import com.hypixel.hytale.builtin.instances.InstancesPlugin;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.hypixel.hytale.server.core.util.EventTitleUtil;
 import com.modjam.hytalemoddingjam.gameLogic.EndedGameData;
 import com.modjam.hytalemoddingjam.gameLogic.GameConfig;
+import com.modjam.hytalemoddingjam.gameLogic.GameLogic;
 
-import java.util.Collection;
 import java.util.function.Consumer;
 
 public class WaveHelper {
+	private GameLogic gameLogic;
     private GameConfig config;
     private WaveSpawner spawner;
 
@@ -22,18 +23,16 @@ public class WaveHelper {
 	private int quota=0;
 	private int scrapCollectedWave=0;
 	private int scrapCollectedTotal=0;
-	private Consumer<EndedGameData> triggerGameOver;
+	private final Consumer<EndedGameData> triggerGameOver;
 	private Consumer<Integer> triggerNextWave;
-    public WaveHelper(GameConfig config,double serverDifficulty ){
+    public WaveHelper(GameLogic gameLogic, GameConfig config, double serverDifficulty, Consumer<EndedGameData> triggerGameOver){
+		this.gameLogic = gameLogic;
         this.config = config;
         this.spawner = new WaveSpawner(serverDifficulty, config);
+		this.triggerGameOver = triggerGameOver;
         spawner.Disable();
 
     }
-	public void setGameOverFunction(Consumer<EndedGameData> fn)
-	{
-		this.triggerGameOver=fn;
-	}
 	public void setNextWaveFunction(Consumer<Integer> fn)
 	{
 		this.triggerNextWave=fn;
@@ -44,34 +43,26 @@ public class WaveHelper {
 		quota = (int) Math.floor(config.getScrapQuotaRate() * spawner.getDifficulty());
         intermission = true;
     }
+
     public void update(Store<EntityStore> store){
         long currentTime = System.currentTimeMillis();
 
         if (intermission) {
             if (currentTime > waveStartTime){
-				scrapCollectedWave = 0;
-                intermission = false;
-                spawner.Enable();
-                store.getExternalData().getWorld().sendMessage(Message.raw("Wave " + (waveIndex + 1) + " has started"));
-                //To Do!!! Run UI Events here to say the next wave started and also update quota
+				startNextWave(store);
             }
         }
-        else{
+        else {
             if (currentTime > (waveStartTime + config.getWaveLength())){
 
 				//Quota checking
-				if(this.scrapCollectedWave >= quota)
-				{
+				if (this.scrapCollectedWave >= quota) {
 					//proceed to next wave
-					nextWave(store,currentTime);
-				}
-				else
-				{
-					if(triggerGameOver !=null)
-						triggerGameOver.accept(new EndedGameData().setLastWave(waveIndex).setTotalScrap(scrapCollectedTotal).setWon(false));
+					endWaveAndGoToIntermission(store,currentTime);
+				} else {
+					triggerGameOver.accept(new EndedGameData().setLastWave(waveIndex).setTotalScrap(scrapCollectedTotal).setWon(false));
 					spawner.Disable();
 				}
-
             }
             else{
                 spawner.Spawn(store);
@@ -79,9 +70,20 @@ public class WaveHelper {
         }
     }
 
-	private void nextWave(Store<EntityStore> store, long currentTime)
-	{
+	private void startNextWave(Store<EntityStore> store) {
+        scrapCollectedWave = 0;
+		intermission = false;
+		spawner.Enable();
+		Message waveStartingMessage = Message.raw("Wave " + (waveIndex + 1) + " is starting!");
+		Message quotaMessage = Message.raw("Quota: " + quota + " scrap");
+		store.getExternalData().getWorld().sendMessage(waveStartingMessage);
+		for (PlayerRef playerRef : gameLogic.getPlayerRefs()) {
+			EventTitleUtil.showEventTitleToPlayer(playerRef, waveStartingMessage, quotaMessage, false, null, 2.0F, 0.5F, 0.5F);
+		}
+	}
 
+	private void endWaveAndGoToIntermission(Store<EntityStore> store, long currentTime)
+	{
 		waveIndex++;
 		spawner.Disable();
 		spawner.Despawn(store);
@@ -92,14 +94,17 @@ public class WaveHelper {
 		waveStartTime = currentTime + config.getWaveIntermissionLength();
 
 		if (waveIndex >= config.getWaveCount()){
-			if(triggerGameOver !=null)
-				triggerGameOver.accept(new EndedGameData().setLastWave(waveIndex).setTotalScrap(scrapCollectedTotal).setWon(true));
-
+			triggerGameOver.accept(new EndedGameData().setLastWave(waveIndex).setTotalScrap(scrapCollectedTotal).setWon(true));
 		}
 		else{
-			store.getExternalData().getWorld().sendMessage(Message.raw("Wave " + waveIndex + " has ended"));
-			if(triggerNextWave!=null)
-				triggerNextWave.accept(waveIndex);
+			Message waveOverMessage = Message.raw("Wave " + waveIndex + " over!");
+			store.getExternalData().getWorld().sendMessage(waveOverMessage);
+			for (PlayerRef playerRef : gameLogic.getPlayerRefs()) {
+				EventTitleUtil.showEventTitleToPlayer(playerRef, waveOverMessage, Message.raw("Intermission: " + ((config.getWaveIntermissionLength() / 1000)) + " seconds"), false, null, 2.0F, 0.5F, 0.5F);
+			}
+			if(triggerNextWave != null) {
+                triggerNextWave.accept(waveIndex);
+            }
 		}
 
 	}
