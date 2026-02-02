@@ -70,19 +70,7 @@ public class GameConfig {
 
 	public GameConfig() {
 	}
-	public int getBaseScrapQuota()
-	{
-		return this.baseScrapThreshold;
-	}
-	public double getScrapQuotaMultiplier()
-	{
-		return this.baseScrapMultiplier;
-	}
-	public int getScrapQuotaForWave(int waveNumber)
-	{
-		return (int)(baseScrapThreshold * Math.pow(baseScrapMultiplier, waveNumber - 1));
 
-	}
 	public int getPortalScrap() {
 		return portalScrap;
 	}

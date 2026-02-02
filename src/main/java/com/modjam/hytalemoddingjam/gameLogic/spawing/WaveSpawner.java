@@ -110,4 +110,6 @@ public class WaveSpawner {
 			commandBuffer.removeEntity(archetypeChunk.getReferenceTo(index), RemoveReason.REMOVE);
 		});
 	}
+
+	public double getDifficulty() { return difficulty; }
 }
