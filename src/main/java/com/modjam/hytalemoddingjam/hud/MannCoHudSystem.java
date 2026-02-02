@@ -10,7 +10,9 @@ import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.entity.entities.player.hud.CustomUIHud;
 import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
+import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.modjam.hytalemoddingjam.MainPlugin;
 import com.modjam.hytalemoddingjam.gameLogic.GameInstances;
 import com.modjam.hytalemoddingjam.gameLogic.GameLogic;
 
@@ -48,6 +50,8 @@ public class MannCoHudSystem extends EntityTickingSystem<EntityStore> {
 
         UICommandBuilder builder = new UICommandBuilder();
         builder.append("Hud.ui");
+		var diff=Universe.get().getDefaultWorld().getEntityStore().getStore().getResource(MainPlugin.getDifficultyResourceType()).getLocalDifficulty();
+		builder.set("#DifficultyLabel.Text","Difficulty: "+diff);
 		if(gameLogic.getWaveHelper().isIntermission()) {
 			//builder.set("#GearLabel.Text", "0/0");
 			builder.set("#WaveLabel.Text", "Prep Time");

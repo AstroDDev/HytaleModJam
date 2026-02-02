@@ -14,8 +14,10 @@ import com.hypixel.hytale.server.core.command.system.arguments.types.ArgTypes;
 import com.hypixel.hytale.server.core.command.system.basecommands.AbstractCommandCollection;
 import com.hypixel.hytale.server.core.command.system.basecommands.AbstractPlayerCommand;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
+import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.modjam.hytalemoddingjam.MainPlugin;
 import com.modjam.hytalemoddingjam.gameLogic.GameInstances;
 import com.modjam.hytalemoddingjam.gameLogic.GameLogic;
 
@@ -25,12 +27,40 @@ import java.util.Locale;
 public class GameCommand extends AbstractCommandCollection {
 
 	public GameCommand() {
-		super("game", "server.commands.modjam.game.desc");
+		super("scrappers", "server.commands.modjam.game.desc");
 		this.addSubCommand(new CreateNewGameCommand());
-		this.addSubCommand(new ForceGameStateCommand());
+		//this.addSubCommand(new ForceGameStateCommand()); Not really relevant anymore
 		this.addSubCommand(new JoinGameCommand());
+		this.addSubCommand(new GetDifficultyCommand());
+		this.addSubCommand(new SetDifficultyCommand());
 	}
+	public static class SetDifficultyCommand extends AbstractPlayerCommand
+	{
+			RequiredArg<Double> param=this.withRequiredArg("level",null,ArgTypes.DOUBLE);
+		public SetDifficultyCommand() {
+			super("setDifficulty","server.commands.modjam.game.setDifficulty.desc");
+		}
 
+		@Override
+		protected void execute(@Nonnull CommandContext context, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
+			var ress=Universe.get().getDefaultWorld().getEntityStore().getStore().getResource(MainPlugin.getDifficultyResourceType());
+			ress.setLocalDifficulty(param.get(context));
+			context.sendMessage(Message.raw("Difficulty set to "+ress.getLocalDifficulty()));
+		}
+	}
+	public static class GetDifficultyCommand extends AbstractPlayerCommand
+	{
+
+		public GetDifficultyCommand() {
+			super("getDifficulty","server.commands.modjam.game.getDifficulty.desc");
+		}
+
+		@Override
+		protected void execute(@Nonnull CommandContext context, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
+			var ress=Universe.get().getDefaultWorld().getEntityStore().getStore().getResource(MainPlugin.getDifficultyResourceType());
+			context.sendMessage(Message.raw("Difficulty is currently "+ress.getLocalDifficulty()));
+		}
+	}
 	public static class CreateNewGameCommand extends AbstractPlayerCommand {
 		public CreateNewGameCommand() {
 			super("create", "server.commands.modjam.game.create.desc");
