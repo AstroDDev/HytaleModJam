@@ -77,24 +77,6 @@ public class GameLogic {
 		},10,TimeUnit.SECONDS);
 
 	}
-	/**
-	 * Temporary method, allow for easy collect scrap from inventory for now
-	 */
-	private void autoScoreScraps()
-	{
-				getPlayers().forEach(pl -> {
-
-					var trans = pl.getInventory().getCombinedEverything().removeItemStack(new ItemStack("RustyGear", 10), false, true);
-					var eaten = 10;
-					if(trans.getRemainder() != null)
-						eaten -= trans.getRemainder().getQuantity();
-					if(eaten > 0) {
-						waveHelper.scrapCollected(eaten,world);
-					}
-
-
-				});
-	}
 	public void applyEffect(String effectId,Ref<EntityStore> player)
 	{
 		EntityEffect entityEffect = EntityEffect.getAssetMap().getAsset(effectId);
