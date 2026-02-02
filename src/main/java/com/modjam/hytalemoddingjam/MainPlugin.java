@@ -3,6 +3,8 @@ package com.modjam.hytalemoddingjam;
 import com.hypixel.hytale.component.*;
 import com.hypixel.hytale.event.EventRegistry;
 import com.hypixel.hytale.server.core.asset.type.gameplay.GameplayConfig;
+import com.hypixel.hytale.server.core.asset.type.gameplay.respawn.RespawnController;
+import com.hypixel.hytale.server.core.asset.type.gameplay.respawn.WorldSpawnPoint;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Interaction;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
@@ -16,6 +18,7 @@ import com.modjam.hytalemoddingjam.commands.GameCommand;
 import com.modjam.hytalemoddingjam.gameLogic.DepositScrapInteraction;
 import com.modjam.hytalemoddingjam.gameLogic.GameConfig;
 import com.modjam.hytalemoddingjam.gameLogic.GameInstances;
+import com.modjam.hytalemoddingjam.gameLogic.GameRespawnController;
 import com.modjam.hytalemoddingjam.hud.MannCoHudSystem;
 import com.modjam.hytalemoddingjam.weakpoints.SpawnEntityWithWeakPointCommand;
 import com.modjam.hytalemoddingjam.weakpoints.WeakPointComponent;
@@ -48,6 +51,7 @@ public class MainPlugin extends JavaPlugin {
         getCodecRegistry(GameplayConfig.PLUGIN_CODEC).register(GameConfig.class, "MannCo", GameConfig.CODEC);
         getCodecRegistry(Interaction.CODEC).register("DepositScrap", DepositScrapInteraction.class, DepositScrapInteraction.CODEC);
 
+		RespawnController.CODEC.register("MannCoGameRespawn", GameRespawnController.class, GameRespawnController.CODEC);
         EventRegistry registry = this.getEventRegistry();
         registry.registerGlobal(StartWorldEvent.class, GameInstances::onStartWorldEvent);
         registry.registerGlobal(RemoveWorldEvent.class, GameInstances::onRemoveWorldEvent);

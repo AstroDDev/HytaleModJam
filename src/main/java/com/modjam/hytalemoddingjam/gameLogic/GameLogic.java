@@ -3,13 +3,16 @@ package com.modjam.hytalemoddingjam.gameLogic;
 import com.hypixel.hytale.builtin.npceditor.NPCRoleAssetTypeHandler;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.server.core.HytaleServer;
+import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.npc.NPCPlugin;
 import com.hypixel.hytale.server.npc.corecomponents.world.ActionStorePosition;
 import com.modjam.hytalemoddingjam.gameLogic.spawing.WaveHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -20,9 +23,6 @@ public class GameLogic {
 	public final Store<EntityStore> store;
 	private ScheduledFuture<?> executor;
 	private boolean started = false;
-	private int units = 50;
-	private int collectedgears = 0;
-
 	private WaveHelper waveHelper;
 
 	public GameLogic(World world, GameConfig config) {
@@ -32,8 +32,6 @@ public class GameLogic {
 	}
 
 	public void start() {
-		this.units = 50;
-		this.collectedgears = 0;
 
 		this.executor = HytaleServer.SCHEDULED_EXECUTOR.scheduleAtFixedRate(() -> world.execute(this::tick), 500, 500, TimeUnit.MILLISECONDS);
 		this.started = true;
@@ -59,6 +57,18 @@ public class GameLogic {
 		collectedgears++;
 	}
 
+	public boolean revivePlayer(String username)
+	{
+		if(waveHelper.getScrapCollectedWave()>=config.getRespawnScrap())
+		{
+			waveHelper.addScrap(-config.getRespawnScrap());
+			world.sendMessage(Message.raw("Reviving "+username+": "+config.getRespawnScrap()+" Scraps lost."));
+			return true;
+		}
+		world.sendMessage(Message.raw(username+" is out of the game!"));
+		return false;
+
+	}
 	public void cleanup() {
 		executor.cancel(true);
 	}
