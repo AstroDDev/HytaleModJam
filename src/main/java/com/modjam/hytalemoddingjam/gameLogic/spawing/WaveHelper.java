@@ -40,7 +40,6 @@ public class WaveHelper {
 		quota = (int) Math.floor(config.getScrapQuotaRate() * spawner.getDifficulty());
         intermission = true;
     }
-
     public void update(Store<EntityStore> store){
         long currentTime = System.currentTimeMillis();
 
