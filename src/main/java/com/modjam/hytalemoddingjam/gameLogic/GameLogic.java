@@ -8,9 +8,16 @@ import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.server.core.HytaleServer;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.asset.type.entityeffect.config.EntityEffect;
+import com.hypixel.hytale.server.core.asset.type.item.config.Item;
+import com.hypixel.hytale.server.core.asset.type.item.config.ItemEntityConfig;
 import com.hypixel.hytale.server.core.entity.effect.EffectControllerComponent;
 import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.event.events.entity.EntityRemoveEvent;
+import com.hypixel.hytale.server.core.inventory.Inventory;
 import com.hypixel.hytale.server.core.inventory.ItemStack;
+import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
+import com.hypixel.hytale.server.core.inventory.container.ItemContainerUtil;
+import com.hypixel.hytale.server.core.modules.entity.player.PlayerItemEntityPickupSystem;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.InteractionEffects;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.none.simple.ApplyEffectInteraction;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
@@ -19,12 +26,11 @@ import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.npc.NPCPlugin;
 import com.hypixel.hytale.server.npc.corecomponents.world.ActionStorePosition;
+import com.hypixel.hytale.server.npc.util.InventoryHelper;
 import com.modjam.hytalemoddingjam.MainPlugin;
 import com.modjam.hytalemoddingjam.gameLogic.spawing.WaveHelper;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -44,20 +50,20 @@ public class GameLogic {
 	}
 
 	public void start() {
-
 		this.executor = HytaleServer.SCHEDULED_EXECUTOR.scheduleAtFixedRate(() -> world.execute(this::tick), 500, 500, TimeUnit.MILLISECONDS);
 		this.started = true;
 		var savedDifficluty = Universe.get().getDefaultWorld().getEntityStore().getStore().getResource(MainPlugin.getDifficultyResourceType()).getLocalDifficulty();
 		this.waveHelper = new WaveHelper(config, savedDifficluty);
 		waveHelper.start(store);
 		waveHelper.setGameOverFunction(this::onGameEnd);
+
 		this.world.sendMessage(Message.raw("Hazard Level is " + Math.floor(savedDifficluty * 100)));
 	}
 	public void onGameEnd(EndedGameData data)
 	{
 
 		this.stop();
-		Universe.get().getDefaultWorld().getEntityStore().getStore().getResource(MainPlugin.getDifficultyResourceType()).addDifficulty(data.isWon()?1:-1);
+		Universe.get().getDefaultWorld().getEntityStore().getStore().getResource(MainPlugin.getDifficultyResourceType()).addDifficulty(data.isWon()? 0.25 : -0.1);
 		world.sendMessage(Message.raw("Game "+(data.isWon()?"Won":"Over")+"!"));
 		world.sendMessage(Message.raw("You survived "+data.getLastWave()+" waves.\nYou collected "+data.getTotalScrap()+" scraps."));
 		world.sendMessage(Message.raw("Instance will close in 10 secondes"));
@@ -97,6 +103,7 @@ public class GameLogic {
 			}
 		}
 	}
+
 	public void tick() {
         if (!started) {
             return;
@@ -104,12 +111,52 @@ public class GameLogic {
 		waveHelper.update(store);
 		boolean atLeast1PlayerAlive=false;
 
-		for(Player player : getPlayers()) {
+		Collection<PlayerRef> playerRefs = world.getPlayerRefs();
+		for(PlayerRef playerref : playerRefs) {
+			Ref<EntityStore> ref = playerref.getReference();
+			Player player = store.getComponent(ref, Player.getComponentType());
+
 			applyEffect("HealthRegen_Buff_T1",player.getReference());
 			if(!deadPlayers.contains(player.getReference()))
 			{
 				atLeast1PlayerAlive=true;
 			}
+			//Forcing player inventory to be in one state
+			Inventory inventory = player.getInventory();
+			ItemContainer hotbar = inventory.getHotbar();
+			ItemContainer storage = inventory.getStorage();
+
+			boolean itemChange = false;
+
+			for (short i = 0; i < storage.getCapacity(); i++){
+				ItemStack item = storage.getItemStack(i);
+				if (item == null || !item.getItemId().equals("BlankItem")) {
+					storage.setItemStackForSlot(i, new ItemStack("BlankItem"));
+					itemChange = true;
+				}
+			}
+
+			ItemStack firstSlot = hotbar.getItemStack((short)0);
+			if (firstSlot == null || !firstSlot.getItemId().equals("MannCoRifle")) {
+				hotbar.setItemStackForSlot((short) 0, new ItemStack("MannCoRifle"));
+				itemChange = true;
+			}
+
+			for (short i = 1; i < 8; i++) {
+				ItemStack item = hotbar.getItemStack(i);
+				if (item == null || !item.getItemId().equals("BlankItem")) {
+					hotbar.setItemStackForSlot(i, new ItemStack("BlankItem"));
+					itemChange = true;
+				}
+			}
+
+			ItemStack lastSlot = hotbar.getItemStack((short) 8);
+			if (!lastSlot.getItemId().equals("RustyGear") && !lastSlot.isEmpty()){
+				hotbar.setItemStackForSlot((short) 8, ItemStack.EMPTY);
+				itemChange = true;
+			}
+
+			if (itemChange) player.sendInventory();
 		}
 		if(!atLeast1PlayerAlive)
 			waveHelper.forceEnd();
