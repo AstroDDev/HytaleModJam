@@ -28,7 +28,7 @@ public class GameCommand extends AbstractCommandCollection {
 
 	public GameCommand() {
 		super("scrappers", "server.commands.modjam.game.desc");
-		this.addSubCommand(new CreateNewGameCommand());
+//		this.addSubCommand(new CreateNewGameCommand());
 		//this.addSubCommand(new ForceGameStateCommand()); Not really relevant anymore
 		this.addSubCommand(new JoinGameCommand());
 		this.addSubCommand(new GetDifficultyCommand());
@@ -61,18 +61,18 @@ public class GameCommand extends AbstractCommandCollection {
 			context.sendMessage(Message.raw("Difficulty is currently "+ress.getLocalDifficulty()));
 		}
 	}
-	public static class CreateNewGameCommand extends AbstractPlayerCommand {
-		public CreateNewGameCommand() {
-			super("create", "server.commands.modjam.game.create.desc");
-			this.addAliases("c");
-		}
-
-		@Override
-		protected void execute(@Nonnull CommandContext context, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
-			GameInstances.createInstance(ref, world);
-			context.sendMessage(Message.raw("Creating instance..."));
-		}
-	}
+//	public static class CreateNewGameCommand extends AbstractPlayerCommand {
+//		public CreateNewGameCommand() {
+//			super("create", "server.commands.modjam.game.create.desc");
+//			this.addAliases("c");
+//		}
+//
+//		@Override
+//		protected void execute(@Nonnull CommandContext context, @Nonnull Store<EntityStore> store, @Nonnull Ref<EntityStore> ref, @Nonnull PlayerRef playerRef, @Nonnull World world) {
+//			GameInstances.createInstance(ref, world);
+//			context.sendMessage(Message.raw("Creating instance..."));
+//		}
+//	}
 
 	public static class JoinGameCommand extends AbstractPlayerCommand {
 		public JoinGameCommand() {

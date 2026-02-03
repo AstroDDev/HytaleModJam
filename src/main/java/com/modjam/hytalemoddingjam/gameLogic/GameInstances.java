@@ -4,14 +4,17 @@ import com.hypixel.hytale.builtin.instances.InstancesPlugin;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.math.vector.Transform;
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
+import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.events.RemoveWorldEvent;
 import com.hypixel.hytale.server.core.universe.world.events.StartWorldEvent;
+import com.hypixel.hytale.server.core.universe.world.spawn.ISpawnProvider;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.modjam.hytalemoddingjam.MainPlugin;
 import com.modjam.hytalemoddingjam.hud.MannCoHudSystem;
 
 import javax.annotation.Nonnull;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -31,10 +34,7 @@ public class GameInstances {
 	}
 
 	public static void createInstance(@Nonnull Ref<EntityStore> ref, @Nonnull World world) {
-		var trans= ref.getStore().getComponent(ref, TransformComponent.getComponentType());
-
-		// TODO probably change to spawn location of world
-		Transform returnLocation = trans.getTransform();
+		Transform returnLocation = new Transform(2, 80, 2, 0, (float) (-Math.PI/2), 0);
 
 		CompletableFuture<World> instanceWorldFuture = InstancesPlugin.get().spawnInstance("MannCoWorld", "MannCoWorld", world, returnLocation);
 		InstancesPlugin.teleportPlayerToLoadingInstance(ref, ref.getStore(), instanceWorldFuture, null);
