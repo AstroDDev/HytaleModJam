@@ -35,7 +35,7 @@ public class GameMenuPage extends InteractiveCustomUIPage<GameMenuPage.GameMenuI
     public void build(@NonNullDecl Ref<EntityStore> ref, @NonNullDecl UICommandBuilder uiCommandBuilder, @NonNullDecl UIEventBuilder uiEventBuilder, @NonNullDecl Store<EntityStore> store) {
         uiCommandBuilder.append("Pages/GameMenu.ui");
         double difficulty = Universe.get().getDefaultWorld().getEntityStore().getStore().getResource(MainPlugin.getDifficultyResourceType()).getLocalDifficulty();
-        uiCommandBuilder.set("#HazardLevel.Text", "Current Hazard Level: " + ((int) Math.floor(difficulty) * 100) + "%");
+        uiCommandBuilder.set("#HazardLevel.Text", "Current Hazard Level: " + ((int) Math.floor(difficulty * 100)) + "%");
         uiEventBuilder.addEventBinding(CustomUIEventBindingType.Activating, "#SummonButton", EventData.of("Action", "SummonActivated"), false);
         uiEventBuilder.addEventBinding(CustomUIEventBindingType.MouseEntered, "#SummonButton", EventData.of("Action", "SummonMouseEntered"), false);
         uiEventBuilder.addEventBinding(CustomUIEventBindingType.MouseExited, "#SummonButton", EventData.of("Action", "SummonMouseExited"), false);

@@ -25,13 +25,16 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.hypixel.hytale.server.core.util.EventTitleUtil;
 import com.hypixel.hytale.server.npc.NPCPlugin;
 import com.hypixel.hytale.server.npc.corecomponents.world.ActionStorePosition;
 import com.hypixel.hytale.server.npc.util.InventoryHelper;
 import com.modjam.hytalemoddingjam.MainPlugin;
 import com.modjam.hytalemoddingjam.gameLogic.spawing.WaveHelper;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -68,18 +71,23 @@ public class GameLogic {
 	}
 
 	public void onGameEnd(EndedGameData data) {
-
 		this.stop();
 		Universe.get().getDefaultWorld().getEntityStore().getStore().getResource(MainPlugin.getDifficultyResourceType()).addDifficulty(data.isWon()? 0.25 : -0.1);
-		world.sendMessage(Message.raw("Game "+(data.isWon()?"Won":"Over")+"!"));
-		world.sendMessage(Message.raw("You survived "+data.getLastWave()+" waves.\nYou collected "+data.getTotalScrap()+" scraps."));
-		world.sendMessage(Message.raw("Instance will close in 10 secondes"));
+
+		Message primaryTitle;
+		if (data.isWon()) primaryTitle = Message.raw("You Win!").color(Color.GREEN).bold(true);
+		else primaryTitle = Message.raw("Game Over").color(Color.RED).bold(true);
+		Message secondaryTitle = Message.raw("World will close in 10 seconds");
+		for (PlayerRef playerRef : getPlayerRefs()) {
+			EventTitleUtil.showEventTitleToPlayer(playerRef, primaryTitle, secondaryTitle, false, null, 2.0F, 0.5F, 0.5F);
+		}
+
+		world.sendMessage(Message.join(Message.raw("You collected "), Message.raw("" + data.getTotalScrap()).bold(true), Message.raw(" scrap!")).color(Color.YELLOW));
+
 		HytaleServer.SCHEDULED_EXECUTOR.schedule(()->{
 			world.execute(()->{
 				world.drainPlayersTo(Universe.get().getDefaultWorld());
 			});
-
-
 		},10,TimeUnit.SECONDS);
 	}
 	public void applyEffect(String effectId,Ref<EntityStore> player)
@@ -100,18 +108,18 @@ public class GameLogic {
             return;
         }
 		waveHelper.update(store);
-		boolean atLeast1PlayerAlive=false;
+		//boolean atLeast1PlayerAlive=false;
 
 		Collection<PlayerRef> playerRefs = world.getPlayerRefs();
 		for(PlayerRef playerref : playerRefs) {
 			Ref<EntityStore> ref = playerref.getReference();
 			Player player = store.getComponent(ref, Player.getComponentType());
 
-			applyEffect("HealthRegen_Buff_T1",player.getReference());
-			if(!deadPlayers.contains(player.getReference()))
+			applyEffect("HealthRegen_Buff_T1", ref);
+			/*if(!deadPlayers.contains(player.getReference()))
 			{
 				atLeast1PlayerAlive=true;
-			}
+			}*/
 			//Forcing player inventory to be in one state
 			Inventory inventory = player.getInventory();
 			ItemContainer hotbar = inventory.getHotbar();
@@ -149,8 +157,8 @@ public class GameLogic {
 
 			if (itemChange) player.sendInventory();
 		}
-		if(!atLeast1PlayerAlive)
-			waveHelper.forceEnd();
+		/*if(!atLeast1PlayerAlive)
+			waveHelper.forceEnd();*/
     }
 
 	public Collection<PlayerRef> getPlayerRefs() {
@@ -168,15 +176,16 @@ public class GameLogic {
 
 	public boolean revivePlayer(String username)
 	{
-		if(waveHelper.getScrapCollectedWave()>=config.getRespawnScrap())
-		{
-			waveHelper.addScrap(-config.getRespawnScrap());
-			world.sendMessage(Message.raw("Reviving "+username+": "+config.getRespawnScrap()+" Scraps lost."));
-			return true;
-		}
+		/*if(waveHelper.getScrapCollectedWave()>=config.getRespawnScrap())
+		{*/
+		//Cannot go negative with scrap
+		int scrapCost = Math.min(config.getRespawnScrap(), waveHelper.getScrapCollectedWave());
+		waveHelper.addScrap(-scrapCost);
+		world.sendMessage(Message.raw("Reviving "+username+": "+ scrapCost +" Scraps lost."));
+		return true;
+		/*}
 		world.sendMessage(Message.raw(username+" is out of the game!"));
-		return false;
-
+		return false;*/
 	}
 	public void addPlayerToDeadList(Ref<EntityStore> dead)
 	{

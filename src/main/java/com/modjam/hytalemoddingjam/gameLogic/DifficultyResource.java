@@ -20,7 +20,7 @@ public class DifficultyResource implements Resource<EntityStore> {
    private double difficulty;
 
    public DifficultyResource() {
-      this(1);
+      this(0.5);
    }
 
    public DifficultyResource(double diff) {
@@ -35,7 +35,7 @@ public class DifficultyResource implements Resource<EntityStore> {
       this.difficulty = diff;
    }
 	public void addDifficulty(double added) {
-		this.difficulty = Math.max(1,difficulty+added);
+		this.difficulty = Math.max(0.1,difficulty+added);
 	}
    @Nonnull
    @Override
