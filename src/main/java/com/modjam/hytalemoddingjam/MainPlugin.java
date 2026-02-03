@@ -5,6 +5,9 @@ import com.hypixel.hytale.event.EventRegistry;
 import com.hypixel.hytale.server.core.asset.type.gameplay.GameplayConfig;
 import com.hypixel.hytale.server.core.asset.type.gameplay.respawn.RespawnController;
 import com.hypixel.hytale.server.core.asset.type.gameplay.respawn.WorldSpawnPoint;
+import com.hypixel.hytale.server.core.event.events.entity.EntityRemoveEvent;
+import com.hypixel.hytale.server.core.event.events.player.AddPlayerToWorldEvent;
+import com.hypixel.hytale.server.core.event.events.player.PlayerReadyEvent;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Interaction;
 import com.hypixel.hytale.server.core.modules.time.TimeResource;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
@@ -16,12 +19,9 @@ import com.modjam.hytalemoddingjam.Matchmaking.Commands.MatchmakingCommands;
 import com.modjam.hytalemoddingjam.Matchmaking.Commands.lobby.LobbyCommands;
 import com.modjam.hytalemoddingjam.Matchmaking.MatchmakingSystem;
 import com.modjam.hytalemoddingjam.commands.GameCommand;
-import com.modjam.hytalemoddingjam.gameLogic.DifficultyResource;
-import com.modjam.hytalemoddingjam.gameLogic.DepositScrapInteraction;
-import com.modjam.hytalemoddingjam.gameLogic.GameConfig;
-import com.modjam.hytalemoddingjam.gameLogic.GameInstances;
-import com.modjam.hytalemoddingjam.gameLogic.GameRespawnController;
+import com.modjam.hytalemoddingjam.gameLogic.*;
 import com.modjam.hytalemoddingjam.hud.MannCoHudSystem;
+import com.modjam.hytalemoddingjam.hud.OpenGameMenuPage;
 import com.modjam.hytalemoddingjam.weakpoints.SpawnEntityWithWeakPointCommand;
 import com.modjam.hytalemoddingjam.weakpoints.WeakPointComponent;
 import com.modjam.hytalemoddingjam.weakpoints.WeakProjectileInteraction;
@@ -64,5 +64,9 @@ public class MainPlugin extends JavaPlugin {
 
         // ui
         MainPlugin.getInstance().getEntityStoreRegistry().registerSystem(new MannCoHudSystem());
+        getCodecRegistry(Interaction.CODEC).register("OpenGameMenu", OpenGameMenuPage.class, OpenGameMenuPage.CODEC);
+
+        getEventRegistry().registerGlobal(AddPlayerToWorldEvent.class, GameEvents::readyPlayer);
+        //getEventRegistry().registerGlobal(EntityRemoveEvent.class, GameEvents::entityRemoved);
     }
 }
