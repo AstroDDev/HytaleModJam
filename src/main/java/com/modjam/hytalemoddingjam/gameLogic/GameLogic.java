@@ -56,7 +56,6 @@ public class GameLogic {
 		var savedDifficluty = Universe.get().getDefaultWorld().getEntityStore().getStore().getResource(MainPlugin.getDifficultyResourceType()).getLocalDifficulty();
 		this.waveHelper = new WaveHelper(this, config, savedDifficluty, this::onGameEnd);
 		waveHelper.start(store);
-		waveHelper.setGameOverFunction(this::onGameEnd);
 		waveHelper.setNextWaveFunction((i)->respawnAllPlayers());
 	}
 
