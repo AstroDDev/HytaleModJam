@@ -62,6 +62,7 @@ public class WaveHelper {
 				} else {
 					triggerGameOver.accept(new EndedGameData().setLastWave(waveIndex).setTotalScrap(scrapCollectedTotal).setWon(false));
 					spawner.Disable();
+					spawner.Despawn(gameLogic.store);
 				}
             }
             else{
@@ -95,6 +96,8 @@ public class WaveHelper {
 
 		if (waveIndex >= config.getWaveCount()){
 			triggerGameOver.accept(new EndedGameData().setLastWave(waveIndex).setTotalScrap(scrapCollectedTotal).setWon(true));
+			spawner.Disable();
+			spawner.Despawn(gameLogic.store);
 		}
 		else{
 			Message waveOverMessage = Message.raw("Wave " + waveIndex + " over!");
@@ -113,6 +116,7 @@ public class WaveHelper {
 		if(triggerGameOver !=null)
 			triggerGameOver.accept(new EndedGameData().setLastWave(waveIndex).setTotalScrap(scrapCollectedTotal).setWon(false));
 		spawner.Disable();
+		spawner.Despawn(gameLogic.store);
 	}
     public long getWaveStartTime() {
         return waveStartTime;

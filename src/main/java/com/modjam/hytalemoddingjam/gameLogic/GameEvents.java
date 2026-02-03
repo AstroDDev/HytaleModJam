@@ -30,12 +30,11 @@ import static com.hypixel.hytale.server.core.entity.EntityUtils.getEntity;
 public class GameEvents {
     public static void readyPlayer(AddPlayerToWorldEvent event){
         World world = event.getWorld();
-        if (!world.getName().equals("MannCoWorld")) return;
-
         Player player = event.getHolder().getComponent(Player.getComponentType());
         Inventory inventory = new Inventory();
-        inventory.getHotbar().setItemStackForSlot((short) 0, new ItemStack("MannCoRifle"));
-        inventory.getUtility().setItemStackForSlot((short) 0, new ItemStack("Weapon_Shield_Iron"));
+        if (world.getName().equals("MannCoWorld")) {
+            inventory.getHotbar().setItemStackForSlot((short) 0, new ItemStack("MannCoRifle"));
+        }
         player.setInventory(inventory);
         player.sendInventory();
     }
