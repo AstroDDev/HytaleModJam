@@ -17,6 +17,9 @@ import com.hypixel.hytale.server.core.modules.entity.EntityModule;
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
 import com.hypixel.hytale.server.core.modules.entity.item.PickupItemSystem;
 import com.hypixel.hytale.server.core.modules.entity.player.PlayerItemEntityPickupSystem;
+import com.hypixel.hytale.server.core.modules.entitystats.EntityStatMap;
+import com.hypixel.hytale.server.core.modules.entitystats.asset.DefaultEntityStatTypes;
+import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.ParticleUtil;
 import com.hypixel.hytale.server.core.universe.world.World;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
@@ -24,6 +27,8 @@ import com.hypixel.hytale.server.npc.NPCPlugin;
 import com.modjam.hytalemoddingjam.MainPlugin;
 import jdk.jfr.consumer.EventStream;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
+
+import java.util.Collection;
 
 import static com.hypixel.hytale.server.core.entity.EntityUtils.getEntity;
 

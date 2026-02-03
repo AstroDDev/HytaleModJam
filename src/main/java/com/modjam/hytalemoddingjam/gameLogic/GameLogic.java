@@ -19,6 +19,8 @@ import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainerUtil;
 import com.hypixel.hytale.server.core.modules.entity.player.PlayerItemEntityPickupSystem;
 import com.hypixel.hytale.server.core.modules.entity.teleport.Teleport;
+import com.hypixel.hytale.server.core.modules.entitystats.EntityStatMap;
+import com.hypixel.hytale.server.core.modules.entitystats.asset.DefaultEntityStatTypes;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.InteractionEffects;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.none.simple.ApplyEffectInteraction;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
@@ -60,6 +62,19 @@ public class GameLogic {
 		this.waveHelper = new WaveHelper(this, config, savedDifficluty, this::onGameEnd);
 		waveHelper.start(store);
 		waveHelper.setNextWaveFunction((i)->respawnAllPlayers());
+
+		RestoreAllHealth();
+	}
+
+	public void RestoreAllHealth(){
+		world.execute(() -> {
+			Collection<PlayerRef> playerRefs = world.getPlayerRefs();
+			for (PlayerRef playerRef : playerRefs){
+				EntityStatMap statMap = world.getEntityStore().getStore().getComponent(playerRef.getReference(), EntityStatMap.getComponentType());
+				statMap.maximizeStatValue(DefaultEntityStatTypes.getHealth());
+				statMap.update();
+			}
+		});
 	}
 
 	public void respawnAllPlayers() {
@@ -73,6 +88,8 @@ public class GameLogic {
 	public void onGameEnd(EndedGameData data) {
 		this.stop();
 		Universe.get().getDefaultWorld().getEntityStore().getStore().getResource(MainPlugin.getDifficultyResourceType()).addDifficulty(data.isWon()? 0.25 : -0.1);
+
+		RestoreAllHealth();
 
 		Message primaryTitle;
 		if (data.isWon()) primaryTitle = Message.raw("You Win!").color(Color.GREEN).bold(true);
@@ -150,7 +167,7 @@ public class GameLogic {
 			}
 
 			ItemStack lastSlot = hotbar.getItemStack((short) 8);
-			if (!lastSlot.getItemId().equals("RustyGear") && !lastSlot.isEmpty()){
+			if (lastSlot != null && !lastSlot.isEmpty() && !lastSlot.getItemId().equals("RustyGear")){
 				hotbar.setItemStackForSlot((short) 8, ItemStack.EMPTY);
 				itemChange = true;
 			}

@@ -8,6 +8,7 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.core.util.EventTitleUtil;
 import com.modjam.hytalemoddingjam.gameLogic.EndedGameData;
 import com.modjam.hytalemoddingjam.gameLogic.GameConfig;
+import com.modjam.hytalemoddingjam.gameLogic.GameInstances;
 import com.modjam.hytalemoddingjam.gameLogic.GameLogic;
 
 import java.util.function.Consumer;
@@ -85,6 +86,8 @@ public class WaveHelper {
 
 	private void endWaveAndGoToIntermission(Store<EntityStore> store, long currentTime)
 	{
+		gameLogic.RestoreAllHealth();
+
 		waveIndex++;
 		spawner.Disable();
 		spawner.Despawn(store);
